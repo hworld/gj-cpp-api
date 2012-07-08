@@ -6,8 +6,8 @@ int main( void )
 
 	GameJoltAPI api( 937, _T("9a8a5265bdf0803ebbd25a9ccb9459a1") );
 
-	api.SetUsername( _T("CROS") );
-	api.SetUserToken( _T("spongebob") );
+	api.SetUsername( _T("") );
+	api.SetUserToken( _T("") );
 
 	if ( api.AuthUser() )
 	{
@@ -43,14 +43,27 @@ int main( void )
 		vector<CStdString> keys = api.GetDataStoreKeys( DataStoreItem::GAME );
 
 		api.AddScore( _T("Died 300 times"), 300 );
-		api.AddScore( _T("Died 200 times"), 200, _T("thisisextra"), _T("PoopyFace") );
+		api.AddScore( _T("Died 200 times"), 200, -1, _T("thisisextra"), _T("PoopyFace") );
 
+		api.AddScore( _T("Died 300 times"), 300, 8571 );
+		api.AddScore( _T("Died 200 times"), 200, 8571, _T("thisisextra"), _T("PoopyFace") );
+
+		wcout << _T("-- Primary Table Scores --") << endl;
 		vector<Score> scores = api.GetScores();
 		vector<Score>::iterator it;
 
 		for ( it = scores.begin(); it != scores.end(); it++ )
 		{
 			wcout << _T("Score: ") + it->GetScore() << endl;
+		}
+
+		wcout << _T("-- Secondary Table Scores --") << endl;
+		vector<Score> scores2 = api.GetScores( 8571 );
+		vector<Score>::iterator it2;
+
+		for ( it2 = scores2.begin(); it2 != scores2.end(); it2++ )
+		{
+			wcout << _T("Score: ") + it2->GetScore() << endl;
 		}
 
 	}

@@ -567,11 +567,12 @@ bool GameJoltAPI::RemoveDataStoreItem( DataStoreItem item )
 }
 
 
-bool GameJoltAPI::AddScore( CStdString score, int sort, CStdString extraData /* = _T("") */, CStdString guest /* = _T("") */ )
+bool GameJoltAPI::AddScore( CStdString score, int sort, int tableId /* = 0 */, CStdString extraData /* = _T("") */, CStdString guest /* = _T("") */ )
 {
 
 	CStdString output;
 	CStdString gameIDString;
+	CStdString tableIdString;
 	CStdString sortString;
 	CStdString requestURL;
 	vector<map<CStdString, CStdString>> parsedOutput;
@@ -587,12 +588,12 @@ bool GameJoltAPI::AddScore( CStdString score, int sort, CStdString extraData /* 
 	// We must format the Game ID to a string.
 	gameIDString.Format( _T("%d"), m_GameID );
 	sortString.Format( _T("%d"), sort );
+	tableIdString.Format( _T("%d"), tableId );
 
 	requestURL = _T("/scores/add/?game_id=") + gameIDString + _T("&score=") + EncodeURL( score ) + _T("&sort=") + sortString + _T("&extra_data=") + EncodeURL( extraData );
 
 	if ( guest == _T("") )
 	{
-
 		// Username must be set.
 		if ( m_Username == _T("") )
 		{
@@ -608,13 +609,15 @@ bool GameJoltAPI::AddScore( CStdString score, int sort, CStdString extraData /* 
 		}
 
 		requestURL += _T("&username=") + EncodeURL( m_Username ) + _T("&user_token=") + EncodeURL( m_UserToken );
-
 	}
 	else
 	{
-
 		requestURL += _T("&guest=") + EncodeURL( guest );
+	}
 
+	// Did they pass in a table ID?
+	if ( tableId > 0 ) {
+		requestURL += _T("&table_id=") + tableIdString;
 	}
 
 	// Send the request.
@@ -646,11 +649,13 @@ bool GameJoltAPI::AddScore( CStdString score, int sort, CStdString extraData /* 
 }
 
 
-vector<Score> GameJoltAPI::GetScores( bool user /* = false */, int limit /* = -1 */ )
+vector<Score> GameJoltAPI::GetScores( int tableId /* = 0 */, bool user /* = false */, int limit /* = -1 */ )
 {
 
 	CStdString output;
 	CStdString gameIDString;
+	CStdString tableIdString;
+	CStdString limitString;
 	CStdString requestURL;
 	vector<map<CStdString, CStdString>> parsedOutput;
 	vector<map<CStdString, CStdString>>::iterator it;
@@ -667,12 +672,13 @@ vector<Score> GameJoltAPI::GetScores( bool user /* = false */, int limit /* = -1
 
 	// We must format the Game ID to a string.
 	gameIDString.Format( _T("%d"), m_GameID );
+	tableIdString.Format( _T("%d"), tableId );
+	limitString.Format( _T("%d"), limit );
 
 	requestURL = _T("/scores/?game_id=") + gameIDString;
 
 	if ( user )
 	{
-
 		// Username must be set.
 		if ( m_Username == _T("") )
 		{
@@ -688,7 +694,14 @@ vector<Score> GameJoltAPI::GetScores( bool user /* = false */, int limit /* = -1
 		}
 
 		requestURL += _T("&username=") + EncodeURL( m_Username ) + _T("&user_token=") + EncodeURL( m_UserToken );
+	}
 
+	if ( limit > 0 ) {
+		requestURL += _T("&limit=") + limitString;
+	}
+
+	if ( tableId > 0 ) {
+		requestURL += _T("&table_id=") + tableIdString;
 	}
 
 	// Send the request.

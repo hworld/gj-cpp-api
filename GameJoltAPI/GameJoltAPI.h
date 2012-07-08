@@ -53,8 +53,8 @@ public:
 	//bool RemoveDataStoreItem( CStdString key );
 	bool RemoveDataStoreItem( DataStoreItem item );
 
-	vector<Score> GetScores( bool user = false, int limit = -1 );
-	bool AddScore( CStdString score, int sort, CStdString extraData = _T(""), CStdString guest = _T("") );
+	vector<Score> GetScores( int tableId = 0, bool user = false, int limit = -1 );
+	bool AddScore( CStdString score, int sort, int tableId = 0, CStdString extraData = _T(""), CStdString guest = _T("") );
 
 	// Utility functions.
 	bool PopulateTrophyInfo();
